@@ -125,3 +125,11 @@ class MySqlTargetDB:
         cursor.execute(query, data)
         self.conn.commit()
         cursor.close()
+
+    def get_lat_lon(entity_id):
+        cursor = self.conn.cursor()
+        cursor.execute(
+       
+            )
+        exists = cursor.fetchall()
+        cursor.close()

@@ -1,6 +1,7 @@
 from kafka_model import KafkaProdConsum
 from validation import EventModel, ValidationError
 from sql_model import MySqlTargetDB
+from haversine import *
 import logger
 import os
 
@@ -37,6 +38,8 @@ for event in kafka.consum_from_kafka("intel"):
             event["speed"] = 0
             data = [event["timestamp"], event["signal_id"], event["entity_id"], event["reported_lat"], event["reported_lon"], event["signal_type"], event["priority_level"], event["speed"]]
             sql.insert_a_new_target(data)
+        lat_lon = sql.get_lat_lon(entity_id)
+        movement = haversine_km()
 
     except Exception as e:
         raise
