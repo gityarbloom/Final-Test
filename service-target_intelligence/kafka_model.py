@@ -20,7 +20,7 @@ class KafkaProdConsum:
 
     
     
-    def publish_to_kafka(self, topic_name: str, event, total:int):
+    def publish_to_kafka(self, topic_name: str, event):
         try:
             event = json.dumps(event).encode('utf-8')
             self.producer.produce(topic=topic_name, value=event, callback=self.delivery_report)

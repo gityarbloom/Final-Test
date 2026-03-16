@@ -18,7 +18,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     volumes:
-      - kafka-kraft:/var/lib/kafka/data
+      - kafka_kraft:/var/lib/kafka/data
     healthcheck:
         test: ["CMD", "kafka-topics", "--bootstrap-server=localhost:9092", "--list"]
         interval: 30s
@@ -38,6 +38,22 @@ services:
       - 3307:3306
     volumes:
       - my-db-volume:/var/lib/mysql
+  
+
+  target_intelligence:
+    build: service-target_intelligence/
+    container_name: target_intelligence
+    ports:
+      - 8200:8200
+    environment:
+      SQL_HOST: mysql
+      SQL_USER: mysql-root
+      MYSQL_ROOT_PASSWORD: mysql-password
+      kafka_boots_etc: kafka:9093
+    depends_on:
+      - kafka
+      - mysql
+
 
 
 volumes:

@@ -1,6 +1,6 @@
 from kafka_model import KafkaProdConsum
 from validation import EventModel, ValidationError
-from sql_model import MySqlConnection
+from sql_model import MySqlTargetDB
 import logger
 import os
 
@@ -16,13 +16,20 @@ c_config = {
     'session.timeout.ms': 6000,
     'auto.offset.reset': 'earliest'
         }
-sql = MySqlConnection()
+sql = MySqlTargetDB()
 
 
 kafka = KafkaProdConsum(p_config, c_config)
 
 for event in kafka.consum_from_kafka("intel"):
     try:
-        valid_event = EventModel(**event)
-    except ValidationError as e:
-
+        signal_id = event["signal_id"]
+        entity_id = event["entity_id"]
+        if not sql.is_destroyed(entity_id):
+            try:
+                valid_event = EventModel(**event)           
+            except ValidationError as e:
+                print(f"notification {signal_id} is not valid")
+        else:
+            kafka.publish_to_kafka("dlq_signals_intel", event=event)
+        

@@ -6,8 +6,8 @@ from uuid import UUID
 
 class EventModel(BaseModel):
     timestamp: datetime
-    id_signal: UUID
-    id_entity: str
+    signal_id: UUID
+    entity_id: str
     lat_reported: float
     lon_reported: float
     type_signal: str

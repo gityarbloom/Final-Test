@@ -1,17 +1,19 @@
 import mysql.connector
-from mysql.connector import errorcode
 import os
 
 
 
-class MySqlConnection:
+class MySqlTargetDB:
 
     def __init__(self):
         self.host = os.getenv("SQL_HOST")
         self.user = os.getenv("SQL_USER")
         self.password = os.getenv("SQL_PASSWORD")
-        self.db = self.create_db()
         self.conn = self.create_connection()
+        self.db = self.create_db()
+        self.target = self.create_target_table()
+        self.attac = self.create_attac_table()
+        self.damage = self.create_damage_table()
 
 
     def create_connection(self):
@@ -34,8 +36,8 @@ class MySqlConnection:
             f"""
             create table if not exists target_table(
             timestamp datetime,
-            id_signal varchar(100),
-            id_entity varcchar(100) primary key,
+            signal_id varchar(100) primary key,
+            entity_id varcchar(100),
             lat_reported float
             lon_reported float
             type_signal char(10)
@@ -45,3 +47,50 @@ class MySqlConnection:
             )
         cursor.close()
 
+
+    def create_attac_table(self):
+        cursor = self.conn.cursor()
+        cursor.execute(
+            f"""
+            create table if not exists target_table(
+            timestamp datetime,
+            attack_id varchar(100) primary key,
+            entity_id varcchar(100),
+            type_weapon varcchar(100)
+            )
+            """
+            )
+        cursor.close()
+
+
+    def create_damage_table(self):
+        cursor = self.conn.cursor()
+        cursor.execute(
+            f"""
+            create table if not exists target_table(
+            timestamp datetime,
+            attack_id varchar(100),
+            entity_id varcchar(100),
+            result varcchar(100)
+            )
+            """
+            )
+        cursor.close()
+
+
+    def is_destroyed(self, entity_id):
+        cursor = self.conn.cursor()
+        cursor.execute(
+            f"""
+            select *
+            from damage
+            where attack_id = {entity_id}
+            and
+            result = destroyed
+            limit 1
+            )
+            """
+            )
+        destroyed = cursor.fetchall()
+        cursor.close()
+        return destroyed
