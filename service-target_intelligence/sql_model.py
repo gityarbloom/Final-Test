@@ -122,5 +122,6 @@ class MySqlTargetDB:
                 values (%s, %s, %s, %s, %s, %s, %s, %s))
             """
         data = (value for value in values)
+        cursor.execute(query, data)
         self.conn.commit()
         cursor.close()

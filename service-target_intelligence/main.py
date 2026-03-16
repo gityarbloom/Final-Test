@@ -35,6 +35,8 @@ for event in kafka.consum_from_kafka("intel"):
         if not sql.is_exists_in_target_banck(entity_id=entity_id):
             event["priority_level"] = 99
             event["speed"] = 0
+            
+            sql.insert_a_new_target()
 
     except Exception as e:
         raise
