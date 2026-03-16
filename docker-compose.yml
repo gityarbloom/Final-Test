@@ -3,6 +3,7 @@ services:
 
   kafka:
     image: apache/kafka-native
+    container_name: kafka
     ports:
       - "9092:9092"
     environment:
@@ -16,6 +17,8 @@ services:
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9091
       KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    volumes:
+      - kafka-kraft:/var/lib/kafka/data
     healthcheck:
         test: ["CMD", "kafka-topics", "--bootstrap-server=localhost:9092", "--list"]
         interval: 30s
@@ -24,21 +27,20 @@ services:
         start_period: 40s
 
 
-
-  mongodb:
-    image: mongo:latest
-    ports:
-      - "27017:27017"
+  mysql:
+    image: mysql:latest
+    container_name: mysql
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-    healthcheck:
-      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 40s
-      
+      SQL_HOST: mysql
+      SQL_USER: mysql-root
+      MYSQL_ROOT_PASSWORD: mysql-password
+    ports:
+      - 3307:3306
+    volumes:
+      - my-db-volume:/var/lib/mysql
+
 
 volumes:
   kafka_kraft:
+  es-data:
+  my-db-volume:
