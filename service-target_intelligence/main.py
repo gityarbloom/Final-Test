@@ -35,8 +35,8 @@ for event in kafka.consum_from_kafka("intel"):
         if not sql.is_exists_in_target_banck(entity_id=entity_id):
             event["priority_level"] = 99
             event["speed"] = 0
-            
-            sql.insert_a_new_target()
+            data = [event["timestamp"], event["signal_id"], event["entity_id"], event["reported_lat"], event["reported_lon"], event["signal_type"], event["priority_level"], event["speed"]]
+            sql.insert_a_new_target(data)
 
     except Exception as e:
         raise
