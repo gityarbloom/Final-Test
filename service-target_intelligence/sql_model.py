@@ -34,29 +34,31 @@ class MySqlTargetDB:
         cursor = self.conn.cursor()
         cursor.execute(
             f"""
-            create table if not exists target_table(
+            create table if not exists target(
             timestamp datetime,
             signal_id varchar(100) primary key,
             entity_id varcchar(100),
-            lat_reported float
-            lon_reported float
+            reported_lat float
+            reported_lon float
             type_signal char(10)
             priority_level int
+            speed int
             )
             """
             )
         cursor.close()
 
 
-    def create_attac_table(self):
+    def create_attack_table(self):
         cursor = self.conn.cursor()
         cursor.execute(
             f"""
-            create table if not exists target_table(
+            create table if not exists attack(
             timestamp datetime,
             attack_id varchar(100) primary key,
             entity_id varcchar(100),
-            type_weapon varcchar(100)
+            weapon_type varcchar(100)
+            speed int
             )
             """
             )
@@ -67,11 +69,12 @@ class MySqlTargetDB:
         cursor = self.conn.cursor()
         cursor.execute(
             f"""
-            create table if not exists target_table(
+            create table if not exists damage(
             timestamp datetime,
             attack_id varchar(100),
             entity_id varcchar(100),
             result varcchar(100)
+            speed int
             )
             """
             )
@@ -84,7 +87,7 @@ class MySqlTargetDB:
             f"""
             select *
             from damage
-            where attack_id = {entity_id}
+            where entity_id = {entity_id}
             and
             result = destroyed
             limit 1
@@ -94,3 +97,30 @@ class MySqlTargetDB:
         destroyed = cursor.fetchall()
         cursor.close()
         return destroyed
+    
+
+    def is_exists_in_target_banck(self, entity_id):
+        cursor = self.conn.cursor()
+        cursor.execute(
+            f"""
+            select *
+            from target
+            where entity_id = {entity_id}
+            )
+            """
+            )
+        exists = cursor.fetchall()
+        cursor.close()
+        return exists
+    
+
+    def insert_a_new_target(self, values: list):
+        cursor = self.conn.cursor()
+        query = """
+            insert into target
+                (timestamp, signal_id, entity_id, reported_lat, reported_lon, signal_type, priority_level, speed)
+                values (%s, %s, %s, %s, %s, %s, %s, %s))
+            """
+        data = (value for value in values)
+        self.conn.commit()
+        cursor.close()

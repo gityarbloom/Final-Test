@@ -32,4 +32,9 @@ for event in kafka.consum_from_kafka("intel"):
                 print(f"notification {signal_id} is not valid")
         else:
             kafka.publish_to_kafka("dlq_signals_intel", event=event)
-        
+        if not sql.is_exists_in_target_banck(entity_id=entity_id):
+            event["priority_level"] = 99
+            event["speed"] = 0
+
+    except Exception as e:
+        raise

@@ -8,7 +8,7 @@ class EventModel(BaseModel):
     timestamp: datetime
     signal_id: UUID
     entity_id: str
-    lat_reported: float
-    lon_reported: float
-    type_signal: str
+    reported_lat: float
+    reported_lon: float
+    signal_type: str
     priority_level: int
